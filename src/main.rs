@@ -50,6 +50,7 @@ fn search(req: &mut Request) -> IronResult<Response> {
             let results: Vec<_> = rwlock.read()
                 .unwrap()
                 .search(&query[0])
+                .iter()
                 .map(|result| SearchResult { 
                     content: result.doc().content().to_string(),
                     html: result.highlighted_content()
