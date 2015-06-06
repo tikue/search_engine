@@ -36,26 +36,12 @@ fn hello(_req: &mut Request) -> IronResult<Response> {
     Ok(Response::with((status::Ok, "Hello!")))
 }
 
-#[derive(RustcEncodable)]
-struct SearchResult {
-    content: String,
-    html: String,
-}
-
 fn search(req: &mut Request) -> IronResult<Response> {
     let query = req.get::<UrlEncodedQuery>().unwrap();
     match query.get("q") {
         Some(query) if query.len() == 1 => {
             let rwlock = req.get::<State<IndexHolder>>().unwrap();
-            let results: Vec<_> = rwlock.read()
-                .unwrap()
-                .search(&query[0])
-                .iter()
-                .map(|result| SearchResult { 
-                    content: result.doc().content().to_string(),
-                    html: result.highlighted_content()
-                })
-                .collect();
+            let results: Vec<_> = rwlock.read().unwrap().search(&query[0]);
             Ok(Response::with((
                         status::Ok, 
                         json::encode(&results).unwrap(), 

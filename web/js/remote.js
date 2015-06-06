@@ -10,8 +10,8 @@ var snippets = new Bloodhound({
     transform: function(snippets) {
         return $.map(snippets, function(snippet) { 
             return { 
-                id: snippet.id,
-                content: snippet.content,
+                content: snippet.doc.content,
+                html: snippet.highlighted,
             }; 
         });
     }
@@ -27,9 +27,11 @@ $('#remote .typeahead').typeahead({
         highlight: 'highlight'
     }
 }, {
-    display: 'content',
+    display: function(obj) { return obj.doc.content; },
     source: snippets.ttAdapter(),
     templates: {
-        suggestion: function (obj) { return "<div>" + obj.html + "</div>"; }
+        suggestion: function (obj) { 
+            return "<div>" + obj.highlighted + "</div>"; 
+        }
     }
 });
