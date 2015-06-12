@@ -87,9 +87,9 @@ dependencies = [
 [[package]]
 name = "inverted_index"
 version = "0.1.0"
-source = "git+https://github.com/tikue/inverted_index.git#98ef1a52a854e6607a1eed6bb01b6bc368c01ef4"
+source = "git+https://github.com/tikue/inverted_index.git#635808a3b88231d9b1030ef743aab094a16b09e0"
 dependencies = [
- "itertools 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -112,7 +112,7 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.3.12"
+version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
