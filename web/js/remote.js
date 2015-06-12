@@ -22,10 +22,7 @@ snippets.initialize();
 // Instantiate the Typeahead UI
 $('#remote .typeahead').typeahead({
     hint: false, 
-    highlight: true,
-    classNames: {
-        highlight: 'highlight'
-    }
+    highlight: false
 }, {
     display: function(obj) { return obj.doc.content; },
     source: snippets.ttAdapter(),
