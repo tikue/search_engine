@@ -16,4 +16,4 @@ $ curl -XPOST 'localhost:3000/index' -d '{
 Then, search in one of two ways:
 
 1. `$ curl -XGET 'localhost:3000/search?q=how'`
-2. open web/search.html and use the autocompletion search
+2. Go to localhost:3000 and use the search bar
