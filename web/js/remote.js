@@ -3,7 +3,7 @@ var snippets = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace("text"),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-        url: 'http://localhost:3000/search?q=%QUERY',
+        url: '/search?q=%QUERY',
         wildcard: '%QUERY',
         rateLimitWait: 0,
     },
