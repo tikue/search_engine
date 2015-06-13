@@ -1,52 +1,63 @@
-extern crate iron;
-extern crate router;
-extern crate urlencoded;
 extern crate bodyparser;
-extern crate persistent;
 extern crate inverted_index;
+extern crate iron;
+extern crate mount;
+extern crate persistent;
+extern crate router;
 extern crate rustc_serialize;
+extern crate staticfile;
+extern crate urlencoded;
 
 use iron::status;
 use iron::headers::AccessControlAllowOrigin;
 use iron::modifiers::Header;
 use iron::prelude::*;
 use iron::typemap::Key;
+use mount::Mount;
 use persistent::State;
 use router::Router;
+use staticfile::Static;
 use urlencoded::UrlEncodedQuery;
 use rustc_serialize::json;
 use inverted_index::{Document, InvertedIndex};
+
+use std::path::Path;
 
 pub struct IndexHolder;
 impl Key for IndexHolder { type Value = InvertedIndex; }
 
 fn main() {
+    let mut mount = Mount::new();
+    mount.mount("/", Static::new(Path::new("web/")));
+    mount.mount("/static/css/search.css", Static::new(Path::new("web/search.css")));
+    mount.mount("/static/js/", Static::new(Path::new("web/js/")));
+
     let mut router = Router::new();
-    router.get("/", hello);
-    router.get("/search", search);
-    router.post("/index", index);
-    
-    let mut chain = Chain::new(router);
+    router.get("/", search);
+    mount.mount("/search", router);
+
+    let mut router = Router::new();
+    router.post("/", index);
+    mount.mount("/index", router);
+
+    let mut chain = Chain::new(mount);
     chain.link(State::<IndexHolder>::both(InvertedIndex::new()));
     Iron::new(chain).http("localhost:3000").unwrap();
-
-}
-
-fn hello(_req: &mut Request) -> IronResult<Response> {
-    Ok(Response::with((status::Ok, "Hello!")))
 }
 
 fn search(req: &mut Request) -> IronResult<Response> {
-    let query = req.get::<UrlEncodedQuery>().unwrap();
-    match query.get("q") {
-        Some(query) if query.len() == 1 => {
-            let rwlock = req.get::<State<IndexHolder>>().unwrap();
-            let results: Vec<_> = rwlock.read().unwrap().search(&query[0]);
-            Ok(Response::with((
-                        status::Ok, 
-                        json::encode(&results).unwrap(), 
-                        Header(AccessControlAllowOrigin::Any))))
-        }
+    match req.get::<UrlEncodedQuery>() {
+        Ok(query) => match query.get("q") {
+            Some(query) if query.len() == 1 => {
+                let rwlock = req.get::<State<IndexHolder>>().unwrap();
+                let results: Vec<_> = rwlock.read().unwrap().search(&query[0]);
+                Ok(Response::with((
+                            status::Ok, 
+                            json::encode(&results).unwrap(), 
+                            Header(AccessControlAllowOrigin::Any))))
+            }
+            _ => Err(IronError::new(Failed, "Provide exactly one 'q' param")),
+        },
         _ => Err(IronError::new(Failed, "Provide exactly one 'q' param")),
     }
 }

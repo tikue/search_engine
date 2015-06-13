@@ -5,9 +5,11 @@ dependencies = [
  "bodyparser 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "inverted_index 0.1.0 (git+https://github.com/tikue/inverted_index.git)",
  "iron 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
+ "mount 0.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "persistent 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "router 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "staticfile 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "urlencoded 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -160,6 +162,16 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "mount"
+version = "0.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "iron 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_trie 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "url 0.2.35 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "num_cpus"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -245,6 +257,23 @@ dependencies = [
 name = "rustc-serialize"
 version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "sequence_trie"
+version = "0.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "staticfile"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "iron 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "mount 0.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "router 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "time 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "tempdir"
