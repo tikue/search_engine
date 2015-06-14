@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 extern crate bodyparser;
 extern crate inverted_index;
 extern crate iron;
@@ -12,9 +15,7 @@ use iron::status;
 use iron::headers::AccessControlAllowOrigin;
 use iron::modifiers::Header;
 use iron::prelude::*;
-use iron::typemap::Key;
 use mount::Mount;
-use persistent::State;
 use router::Router;
 use staticfile::Static;
 use urlencoded::UrlEncodedQuery;
@@ -22,9 +23,11 @@ use rustc_serialize::json;
 use inverted_index::{Document, InvertedIndex};
 
 use std::path::Path;
+use std::sync::RwLock;
 
-pub struct IndexHolder;
-impl Key for IndexHolder { type Value = InvertedIndex; }
+lazy_static! {
+    static ref INDEX: RwLock<InvertedIndex> = RwLock::new(InvertedIndex::new());
+}
 
 fn main() {
     let mut mount = Mount::new();
@@ -40,17 +43,14 @@ fn main() {
     router.post("/", index);
     mount.mount("/index", router);
 
-    let mut chain = Chain::new(mount);
-    chain.link(State::<IndexHolder>::both(InvertedIndex::new()));
-    Iron::new(chain).http("localhost:3000").unwrap();
+    Iron::new(mount).http("localhost:3000").unwrap();
 }
 
 fn search(req: &mut Request) -> IronResult<Response> {
     match req.get::<UrlEncodedQuery>() {
         Ok(query) => match query.get("q") {
             Some(query) if query.len() == 1 => {
-                let rwlock = req.get::<State<IndexHolder>>().unwrap();
-                let results: Vec<_> = rwlock.read().unwrap().search(&query[0]);
+                let results: Vec<_> = INDEX.read().unwrap().search(&query[0]);
                 Ok(Response::with((
                             status::Ok, 
                             json::encode(&results).unwrap(), 
@@ -66,10 +66,8 @@ fn index(req: &mut Request) -> IronResult<Response> {
     let json_body = req.get::<bodyparser::Struct<Document>>();
     match json_body {
         Ok(Some(doc)) => {
-            let rwlock = req.get::<State<IndexHolder>>().unwrap();
-            let mut search_index = rwlock.write().unwrap();
             let json = json::encode(&doc).unwrap();
-            search_index.index(doc);
+            INDEX.write().unwrap().index(doc);
             Ok(Response::with((status::Ok, json)))
         },
         Ok(None) => Err(IronError::new(Failed, "Provide a document with an id and content.")),
