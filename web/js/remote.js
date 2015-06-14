@@ -6,14 +6,6 @@ var snippets = new Bloodhound({
         url: '/search?q=%QUERY',
         wildcard: '%QUERY',
         rateLimitWait: 0,
-    },
-    transform: function(snippets) {
-        return $.map(snippets, function(snippet) { 
-            return { 
-                content: snippet.doc.content,
-                html: snippet.highlighted,
-            }; 
-        });
     }
 });
 
@@ -28,7 +20,20 @@ $('#remote .typeahead').typeahead({
     source: snippets.ttAdapter(),
     templates: {
         suggestion: function (obj) { 
-            return "<div>" + obj.highlighted + "</div>"; 
+            var begin_idx = 0;
+            var parts = "<div>";
+            obj.highlights.forEach(function (indices) {
+                var begin = indices[0];
+                var end = indices[1];
+                parts += obj.doc.content.slice(begin_idx, begin);
+                parts += "<span class=highlight>";
+                parts += obj.doc.content.slice(begin, end);
+                parts += "</span>";
+                begin_idx = end;
+            });
+            parts += obj.doc.content.slice(begin_idx);
+            parts += "</div>";
+            return parts;
         }
     }
 });

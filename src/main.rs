@@ -50,7 +50,7 @@ fn search(req: &mut Request) -> IronResult<Response> {
     match req.get::<UrlEncodedQuery>() {
         Ok(query) => match query.get("q") {
             Some(query) if query.len() == 1 => {
-                let results: Vec<_> = INDEX.read().unwrap().search(&query[0]);
+                let results = INDEX.read().unwrap().search(&query[0]);
                 Ok(Response::with((
                             status::Ok, 
                             json::encode(&results).unwrap(), 
