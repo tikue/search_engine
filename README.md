@@ -1,7 +1,7 @@
 # How to use
 First, start the search engine:
 ```
-$ cargo run --release`
+$ cargo run --release
 ```
 It defaults to localhost on port 3000.
 
